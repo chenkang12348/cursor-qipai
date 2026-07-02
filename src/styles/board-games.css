@@ -1,0 +1,683 @@
+/* 棋盘类 UI — 参考 lichess chessground / ns2250225/Chess */
+
+.xq-board-wrap,
+.chess-board-wrap,
+.gomoku-board-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  min-height: 0;
+}
+
+/* —— 中国象棋 —— */
+.xq-board {
+  position: relative;
+  width: min(calc(100vw - 24px), 400px);
+  aspect-ratio: 9 / 10;
+  background: linear-gradient(145deg, #e8c882 0%, #c9a227 40%, #b8922a 100%);
+  border: 3px solid #6b4f1d;
+  border-radius: 4px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.35),
+    inset 0 0 40px rgba(255, 255, 255, 0.08);
+}
+
+.xq-board__river {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 44%;
+  height: 12%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.xq-board__river span {
+  font-size: clamp(14px, 4vw, 20px);
+  font-weight: 700;
+  letter-spacing: 0.5em;
+  color: rgba(80, 50, 10, 0.55);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.xq-grid {
+  position: absolute;
+  inset: 4%;
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  background-image:
+    linear-gradient(to right, rgba(80, 50, 10, 0.45) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(80, 50, 10, 0.45) 1px, transparent 1px);
+  background-size: calc(100% / 8) calc(100% / 9);
+  background-position: center;
+}
+
+.xq-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.xq-cell--hint::before {
+  content: '';
+  position: absolute;
+  width: 28%;
+  height: 28%;
+  border-radius: 50%;
+  background: rgba(30, 107, 69, 0.65);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+}
+
+.xq-cell--selected .xq-piece {
+  box-shadow:
+    0 0 0 3px var(--color-accent),
+    0 4px 8px rgba(0, 0, 0, 0.35);
+}
+
+.xq-cell--last::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(212, 160, 23, 0.25);
+  pointer-events: none;
+}
+
+.xq-cell--check .xq-piece {
+  animation: xq-check-pulse 1s ease-in-out infinite;
+  box-shadow:
+    0 0 0 3px #e74c3c,
+    0 4px 8px rgba(0, 0, 0, 0.35);
+}
+
+@keyframes xq-check-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 3px #e74c3c,
+      0 4px 8px rgba(0, 0, 0, 0.35);
+  }
+  50% {
+    box-shadow:
+      0 0 0 5px rgba(231, 76, 60, 0.55),
+      0 4px 12px rgba(231, 76, 60, 0.35);
+  }
+}
+
+.xq-piece {
+  width: 88%;
+  aspect-ratio: 1;
+  max-width: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(13px, 3.8vw, 18px);
+  font-weight: 800;
+  background: radial-gradient(circle at 35% 30%, #fff8e7 0%, #f0d9a0 55%, #c9a227 100%);
+  border: 2px solid #8b6914;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6);
+  user-select: none;
+}
+
+.xq-piece--red {
+  color: #c41e3a;
+  border-color: #a01830;
+}
+
+.xq-piece--black {
+  color: #1a1a1a;
+  border-color: #333;
+  background: radial-gradient(circle at 35% 30%, #f5f0e6 0%, #d4c4a0 55%, #a89060 100%);
+}
+
+/* —— 国际象棋 —— */
+.chess-board {
+  width: min(calc(100vw - 24px), 420px);
+  aspect-ratio: 1;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  border: 3px solid #4a3728;
+  border-radius: 2px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.chess-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+}
+
+.chess-cell--light {
+  background: #f0d9b5;
+}
+
+.chess-cell--dark {
+  background: #b58863;
+}
+
+.chess-cell--hint::after {
+  content: '';
+  position: absolute;
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: rgba(30, 107, 69, 0.55);
+}
+
+.chess-cell--capture.chess-cell--hint::after {
+  width: 85%;
+  height: 85%;
+  border-radius: 50%;
+  background: transparent;
+  border: 3px solid rgba(30, 107, 69, 0.65);
+}
+
+.chess-cell--selected {
+  background: rgba(212, 160, 23, 0.55) !important;
+}
+
+.chess-cell--last {
+  background: rgba(212, 160, 23, 0.35) !important;
+}
+
+.chess-piece {
+  font-size: clamp(22px, 7vw, 36px);
+  line-height: 1;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35));
+  user-select: none;
+}
+
+.chess-piece--white {
+  color: #fff;
+  text-shadow: 0 0 2px #333, 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.chess-piece--black {
+  color: #222;
+}
+
+/* —— 五子棋 —— */
+.gomoku-board {
+  position: relative;
+  width: min(100%, 400px);
+  aspect-ratio: 1;
+  background: linear-gradient(145deg, #e8c882 0%, #dcb35c 50%, #c9a227 100%);
+  border: 3px solid #6b4f1d;
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  padding: 3%;
+}
+
+.gomoku-grid {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(15, 1fr);
+  grid-template-rows: repeat(15, 1fr);
+  background-image:
+    linear-gradient(to right, rgba(60, 40, 10, 0.5) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(60, 40, 10, 0.5) 1px, transparent 1px);
+  background-size: calc(100% / 14) calc(100% / 14);
+}
+
+.gomoku-point {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.gomoku-point--star::before {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(40, 25, 5, 0.75);
+  z-index: 0;
+}
+
+.gomoku-stone {
+  width: 88%;
+  height: 88%;
+  border-radius: 50%;
+  z-index: 1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+.gomoku-stone--black {
+  background: radial-gradient(circle at 32% 28%, #666 0%, #111 45%, #000 100%);
+}
+
+.gomoku-stone--white {
+  background: radial-gradient(circle at 32% 28%, #fff 0%, #eee 50%, #bbb 100%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.gomoku-point--last .gomoku-stone::after {
+  content: '';
+  position: absolute;
+  width: 28%;
+  height: 28%;
+  border-radius: 50%;
+  background: #e74c3c;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.gomoku-point--hint::before {
+  content: '';
+  position: absolute;
+  width: 36%;
+  height: 36%;
+  border-radius: 50%;
+  background: rgba(212, 160, 23, 0.75);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+  z-index: 0;
+}
+
+.gomoku-stone {
+  position: relative;
+}
+
+/* —— 斗地主牌桌 —— */
+.ddz-table {
+  flex: 1;
+  display: grid;
+  grid-template-areas:
+    '. top .'
+    'left center right'
+    '. bottom .';
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: auto 1fr auto;
+  gap: 8px;
+  padding: 8px 4px;
+  min-height: 0;
+}
+
+.ddz-table__top {
+  grid-area: top;
+  justify-self: center;
+}
+
+.ddz-table__left {
+  grid-area: left;
+  align-self: center;
+  justify-self: end;
+}
+
+.ddz-table__right {
+  grid-area: right;
+  align-self: center;
+  justify-self: start;
+}
+
+.ddz-table__center {
+  grid-area: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 80px;
+}
+
+.ddz-table__bottom {
+  grid-area: bottom;
+}
+
+.ddz-play-zone {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  padding: 8px 12px;
+  min-height: 56px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+.ddz-play-zone__label {
+  width: 100%;
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+}
+
+.ddz-bottom-cards {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 8px 4px calc(8px + var(--safe-bottom));
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ddz-bottom-cards .playing-card {
+  scroll-snap-align: center;
+  margin-left: -12px;
+}
+
+.ddz-bottom-cards .playing-card:first-child {
+  margin-left: 0;
+}
+
+.ddz-bid-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  margin: 0 12px;
+}
+
+.ddz-bid-panel .hint {
+  width: 100%;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  margin: 0;
+}
+
+/* —— 麻将四方牌桌 —— */
+.mj-table {
+  flex: 1;
+  display: grid;
+  grid-template-areas:
+    '. north .'
+    'west center east';
+  grid-template-columns: minmax(68px, 88px) 1fr minmax(68px, 88px);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 4px 6px;
+  padding: 4px 6px;
+  min-height: 0;
+}
+
+.mj-table__north {
+  grid-area: north;
+  justify-self: center;
+  align-self: end;
+}
+
+.mj-table__west {
+  grid-area: west;
+  align-self: center;
+  justify-self: end;
+}
+
+.mj-table__east {
+  grid-area: east;
+  align-self: center;
+  justify-self: start;
+}
+
+.mj-table__center {
+  grid-area: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.mj-wall-info {
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.75);
+  padding: 4px;
+}
+
+.mj-discard-grid {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+}
+
+.mj-discard-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.mj-discard-row__label {
+  width: 18px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
+}
+
+.mj-hand-bar {
+  padding: 8px 4px calc(8px + var(--safe-bottom));
+  background: rgba(0, 0, 0, 0.28);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mj-hand-bar .hand-row {
+  background: transparent;
+  padding: 4px 0;
+}
+
+.mj-que-men {
+  margin: 12px 16px;
+  padding: 20px 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.mj-que-men h3 {
+  margin: 0 0 4px;
+  font-size: 17px;
+  text-align: center;
+}
+
+.mj-que-men p {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.mj-que-men__hand {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 16px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.mj-player-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 11px;
+  min-width: 60px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(4px);
+}
+
+.mj-table__north.mj-player-chip {
+  min-width: 100px;
+}
+
+.mj-table__west.mj-player-chip,
+.mj-table__east.mj-player-chip {
+  min-width: 52px;
+  padding: 8px 6px;
+}
+
+.mj-player-chip--active {
+  outline: 2px solid var(--color-accent);
+  box-shadow: 0 0 10px rgba(212, 160, 23, 0.45);
+}
+
+.mj-player-chip__name {
+  font-weight: 600;
+  max-width: 56px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mj-player-chip__meta {
+  opacity: 0.85;
+  font-size: 10px;
+}
+
+.mj-side-hand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+}
+
+.mj-side-hand span {
+  width: 18px;
+  height: 26px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, #2980b9, #1a5276);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mj-side-hand__count {
+  font-size: 11px;
+  color: #fff;
+  margin-top: 2px;
+}
+
+/* 手牌区强制全宽 */
+.mj-hand-dock,
+.card-game-layout--landscape .player-hand-dock {
+  width: 100%;
+  min-width: 0;
+}
+
+.card-game-layout--landscape .player-hand-dock__inner {
+  width: 100%;
+}
+
+.game-start-banner {
+  margin: 8px 12px 0;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* 牌桌 + 手牌分区（移动端） */
+.card-game-layout {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.card-game-layout__arena {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mj-table {
+  flex: 1;
+  min-height: 0;
+}
+
+.mj-que-men-inline {
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.mj-que-men-inline p {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.mj-que-men-suits {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.mj-que-men-suits :deep(.van-radio) {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  color: #fff;
+}
+
+.mj-que-men-suits :deep(.van-radio--checked) {
+  background: var(--color-accent);
+  color: #1a1a1a;
+}
+
+.ddz-play-zone--compact {
+  min-height: auto;
+  padding: 4px 8px;
+}
+
+.ddz-table {
+  flex: 1;
+  min-height: 0;
+}
+
+/* 4 按钮叫地主时略缩小 */
+.player-hand-dock__actions .game-action-bar:has(.game-action-bar__btn:nth-child(4)) {
+  gap: 6px;
+}
+
+.player-hand-dock__actions .game-action-bar:has(.game-action-bar__btn:nth-child(4)) .game-action-bar__btn {
+  font-size: 13px;
+  padding: 8px 6px;
+}

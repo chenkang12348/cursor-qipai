@@ -1,0 +1,69 @@
+/* 麻将 / 斗地主 — 横屏优先布局（不强制 CSS 旋转 body，避免交互失效） */
+
+@media (max-width: 767px) {
+  .game-layout--landscape-mobile {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .game-layout--landscape-mobile .game-layout__body {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+  }
+
+  .game-layout--landscape-mobile .game-layout__main {
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .game-layout--landscape-mobile .game-layout__main .card-game-layout {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .game-layout--landscape-mobile .game-nav {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+
+  .card-game-layout--landscape {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-columns: 1fr;
+    height: 100%;
+    min-height: 0;
+    width: 100%;
+  }
+
+  .card-game-layout--landscape .card-game-layout__arena {
+    min-height: 0;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .card-game-layout--landscape .player-hand-dock {
+    border-top: 2px solid rgba(255, 176, 32, 0.35);
+    width: 100%;
+    min-width: 0;
+  }
+
+  .card-game-layout--landscape .player-hand-dock__actions .game-action-bar {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .card-game-layout--landscape .mj-table {
+    grid-template-columns: minmax(56px, 72px) 1fr minmax(56px, 72px);
+  }
+}
+
+@media (min-width: 768px) {
+  .card-game-layout--landscape {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    height: 100%;
+    width: 100%;
+  }
+}
