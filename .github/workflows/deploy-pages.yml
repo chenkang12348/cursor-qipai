@@ -1,17 +1,18 @@
-name: Deploy to GitHub Pages
+name: Build docs for GitHub Pages
 
+# 与 GitHub Pages「Deploy from branch → master → /docs」配置配套
 on:
   push:
-    branches: [main, master]
+    branches: [master]
+    paths-ignore:
+      - 'docs/**'
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages
+  group: pages-docs
   cancel-in-progress: true
 
 jobs:
@@ -27,21 +28,15 @@ jobs:
 
       - run: npm ci
 
-      - name: Build for GitHub Pages
-        run: npm run build
+      - name: Build static site into docs/
+        run: npm run build:pages
         env:
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
 
-      - uses: actions/upload-pages-artifact@v3
+      - name: Commit docs/ to master
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          folder: docs
+          branch: master
+          single-commit: true
+          clean: true

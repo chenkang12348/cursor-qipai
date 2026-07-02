@@ -33,42 +33,60 @@ npm run preview
 
 ## 免费部署到公网（GitHub Pages）
 
-适合长期免费访问，推送代码后自动发布。
+适合长期免费访问。当前仓库 `chenkang12348/cursor-qipai` 使用 **master 分支 + `/docs` 目录** 发布。
 
-### 1. 创建 GitHub 仓库并推送
+### 访问地址
+
+```text
+https://chenkang12348.github.io/cursor-qipai/
+```
+
+### GitHub Pages 设置（与截图一致）
+
+1. 仓库 → **Settings** → **Pages**
+2. **Build and deployment** → Source 选 **Deploy from a branch**
+3. Branch 选 **master**，Folder 选 **/docs**
+4. 保存后等待 1～3 分钟生效
+
+### 自动部署（推荐）
+
+推送 `master` 上除 `docs/` 以外的代码变更时，`.github/workflows/deploy-pages.yml` 会自动构建并提交到 `docs/`：
+
+```bash
+git add .
+git commit -m "feat: 更新功能"
+git push origin master
+```
+
+### 本地手动构建（可选）
+
+```bash
+npm run build:pages
+git add docs
+git commit -m "chore: update GitHub Pages build"
+git push origin master
+```
+
+本地预览 Pages 效果：
+
+```bash
+npm run preview:pages
+```
+
+> 若仓库改名，请同步修改 `package.json` 中 `build:pages` 的 `--base /仓库名/` 前缀。
+
+### 首次推送
 
 ```bash
 git init
 git add .
 git commit -m "init: 棋牌乐园"
-git branch -M main
-git remote add origin https://github.com/你的用户名/qipai-leyuan.git
-git push -u origin main
+git branch -M master
+git remote add origin https://github.com/chenkang12348/cursor-qipai.git
+git push -u origin master
 ```
 
-> 仓库名可以自定义；若改名，GitHub Actions 会自动使用新仓库名作为路径前缀。
-
-### 2. 开启 GitHub Pages
-
-1. 打开 GitHub 仓库 → **Settings** → **Pages**
-2. **Build and deployment** → Source 选 **GitHub Actions**
-3. 推送 `main` 分支后，`.github/workflows/deploy-pages.yml` 会自动构建并部署
-
-### 3. 手机访问地址
-
-部署完成后访问：
-
-```text
-https://你的用户名.github.io/仓库名/
-```
-
-例如仓库名为 `qipai-leyuan`：
-
-```text
-https://zhangsan.github.io/qipai-leyuan/
-```
-
-在 Pages 设置页可看到实际 URL。首次部署约需 1～3 分钟。
+首次部署约需 1～3 分钟，在 Pages 设置页可看到实际 URL。
 
 ### 其他免费平台（可选）
 

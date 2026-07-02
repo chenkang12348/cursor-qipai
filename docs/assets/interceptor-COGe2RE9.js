@@ -1,0 +1,1 @@
+import{X as e,Y as t}from"./base-BXas5g6t.js";function n(n,{args:r=[],done:i,canceled:a,error:o}){if(n){let s=n.apply(null,r);t(s)?s.then(e=>{e?i():a&&a()}).catch(o||e):s?i():a&&a()}else i()}export{n as t};

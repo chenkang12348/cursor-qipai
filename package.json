@@ -7,7 +7,9 @@
     "dev": "vite",
     "dev:host": "vite --host",
     "build": "vue-tsc -b && vite build",
+    "build:pages": "vue-tsc -b && vite build --outDir docs --base /cursor-qipai/",
     "preview": "vite preview",
+    "preview:pages": "vite preview --outDir docs --base /cursor-qipai/",
     "lint": "eslint src"
   },
   "dependencies": {
